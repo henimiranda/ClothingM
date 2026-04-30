@@ -51,4 +51,4 @@ ClothingM adalah platform E-Commerce profesional yang terintegrasi dengan sistem
 - **Password**: `admin`
 
 ---
-*Dikembangkan dengan ❤️ untuk Tugas Akhir oleh ClothingM Team.*
+
