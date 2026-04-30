@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: clothingm_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: clothingm
+    ports:
+      - "5437:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  backend:
+    build: ./backend
+    container_name: clothingm_backend
+    ports:
+      - "5052:5000"
+    environment:
+      DATABASE_URL: postgres://admin:adminpassword@db:5432/clothingm
+      JWT_SECRET: supersecretkey
+      PORT: 5000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: clothingm_frontend
+    ports:
+      - "3034:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:5052/api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
