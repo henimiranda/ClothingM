@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { Pool } = require('pg');
+const pool = require('./utils/db');
 require('dotenv').config();
 
 const app = express();
@@ -9,11 +9,6 @@ const port = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Database Connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));

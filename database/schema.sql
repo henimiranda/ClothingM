@@ -59,19 +59,21 @@ CREATE TABLE IF NOT EXISTS production_orders (
 
 -- Seed some initial data
 INSERT INTO users (name, email, password, role) VALUES 
-('Admin ClothingM', 'admin@clothingm.com', '$2a$10$6jP5x1fU7G.0u7uX7G.0u7uX7G.0u7uX7G.0u7uX7G.0u7uX7G.0u7uX7G.', 'admin');
+('Admin ClothingM', 'admin@clothingm.com', '$2a$10$6jP5x1fU7G.0u7uX7G.0u7uX7G.0u7uX7G.0u7uX7G.0u7uX7G.0u7uX7G.', 'admin')
+ON CONFLICT (email) DO NOTHING;
 
-INSERT INTO products (name, description, price, base_stock, category, size, image_url) VALUES 
-('Kaos Polos Klasik', 'Kaos putih esensial dari 100% katun organik, nyaman dipakai sehari-hari.', 150000, 100, 'T-Shirt', 'L', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800'),
-('Jaket Denim Vintage', 'Jaket denim dengan aksen pudar vintage dan kancing perak.', 450000, 50, 'Outerwear', 'XL', 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=800'),
-('Celana Chino Slim Fit', 'Celana chino warna khaki dengan potongan slim fit yang elegan.', 300000, 75, 'Pants', '32', 'https://images.unsplash.com/photo-1624371414361-e6e0ed262f6c?q=80&w=800'),
-('Hoodie Oversized', 'Hoodie fleece ultra-lembut dengan potongan oversized yang modern.', 350000, 40, 'Outerwear', 'M', 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800'),
-('Kemeja Flanel', 'Kemeja flanel motif kotak-kotak klasik untuk gaya kasual.', 250000, 60, 'T-Shirt', 'L', 'https://images.unsplash.com/photo-1598033129183-c4f50c7176c8?q=80&w=800'),
-('Celana Cargo', 'Celana cargo fungsional dengan banyak saku penyimpanan.', 380000, 30, 'Pants', '34', 'https://images.unsplash.com/photo-1617114919297-3c8ddb01f599?q=80&w=800'),
-('Jaket Bomber', 'Jaket bomber hitam sleek dengan bahan tahan air (water-resistant).', 550000, 25, 'Outerwear', 'L', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800'),
-('Kaos Grafis Street', 'Kaos dengan print grafis berani yang terinspirasi seni urban.', 180000, 120, 'T-Shirt', 'XL', 'https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=800'),
-('Kemeja Linen Musim Panas', 'Kemeja linen breathable yang sempurna untuk cuaca tropis.', 320000, 45, 'T-Shirt', 'M', 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800'),
-('Ikat Pinggang Kulit', 'Ikat pinggang kulit asli premium dengan gesper logam elegan.', 200000, 100, 'Accessories', 'One Size', 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=800');
+INSERT INTO products (id, name, description, price, base_stock, category, size, image_url) VALUES 
+(1, 'Kaos Polos Klasik', 'Kaos putih esensial dari 100% katun organik, nyaman dipakai sehari-hari.', 150000, 100, 'T-Shirt', 'L', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800'),
+(2, 'Jaket Denim Vintage', 'Jaket denim dengan aksen pudar vintage dan kancing perak.', 450000, 50, 'Outerwear', 'XL', 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=800'),
+(3, 'Celana Chino Slim Fit', 'Celana chino warna khaki dengan potongan slim fit yang elegan.', 300000, 75, 'Pants', '32', 'https://images.unsplash.com/photo-1624371414361-e6e0ed262f6c?q=80&w=800'),
+(4, 'Hoodie Oversized', 'Hoodie fleece ultra-lembut dengan potongan oversized yang modern.', 350000, 40, 'Outerwear', 'M', 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800'),
+(5, 'Kemeja Flanel', 'Kemeja flanel motif kotak-kotak klasik untuk gaya kasual.', 250000, 60, 'T-Shirt', 'L', 'https://images.unsplash.com/photo-1598033129183-c4f50c7176c8?q=80&w=800'),
+(6, 'Celana Cargo', 'Celana cargo fungsional dengan banyak saku penyimpanan.', 380000, 30, 'Pants', '34', 'https://images.unsplash.com/photo-1617114919297-3c8ddb01f599?q=80&w=800'),
+(7, 'Jaket Bomber', 'Jaket bomber hitam sleek dengan bahan tahan air (water-resistant).', 550000, 25, 'Outerwear', 'L', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800'),
+(8, 'Kaos Grafis Street', 'Kaos dengan print grafis berani yang terinspirasi seni urban.', 180000, 120, 'T-Shirt', 'XL', 'https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=800'),
+(9, 'Kemeja Linen Musim Panas', 'Kemeja linen breathable yang sempurna untuk cuaca tropis.', 320000, 45, 'T-Shirt', 'M', 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800'),
+(10, 'Ikat Pinggang Kulit', 'Ikat pinggang kulit asli premium dengan gesper logam elegan.', 200000, 100, 'Accessories', 'One Size', 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=800')
+ON CONFLICT (id) DO NOTHING;
 
 -- Seed initial Inventory Logs
 INSERT INTO inventory_logs (product_id, type, quantity, reason) VALUES 

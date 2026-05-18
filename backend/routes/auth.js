@@ -1,13 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Pool } = require('pg');
-require('dotenv').config();
-
-const router = express.Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const pool = require('../utils/db');
 
 // Register
 router.post('/register', async (req, res) => {
