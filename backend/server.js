@@ -23,6 +23,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'ClothingM API is running' });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+module.exports = app;

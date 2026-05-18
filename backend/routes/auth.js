@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../utils/db');
 
+const router = express.Router();
+
 // Register
 router.post('/register', async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -57,25 +59,19 @@ router.post('/login', async (req, res) => {
       }
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ 
-          token, 
-          user: { 
-            id: user.rows[0].id, 
-            name: user.rows[0].name, 
-            role: user.rows[0].role 
-          } 
-        });
-      }
-    );
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+    
+    res.json({ 
+      token, 
+      user: { 
+        id: user.rows[0].id, 
+        name: user.rows[0].name, 
+        role: user.rows[0].role 
+      } 
+    });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Login Error:', err);
+    res.status(500).json({ message: 'Server Error: ' + err.message });
   }
 });
 

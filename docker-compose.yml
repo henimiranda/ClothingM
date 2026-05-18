@@ -58,24 +58,7 @@ services:
       exit 0;
       "
 
-  backend:
-    build: ./backend
-    container_name: clothingm_backend
-    env_file: .env
-    ports:
-      - "5052:5000"
-    depends_on:
-      - minio
 
-  frontend:
-    build: ./frontend
-    container_name: clothingm_frontend
-    ports:
-      - "3034:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:5052/api
-    depends_on:
-      - backend
 
 volumes:
   minio_data:
