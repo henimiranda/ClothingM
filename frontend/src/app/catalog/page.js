@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import { ShoppingCart, Filter, Search, Loader2, Tag, Check } from 'lucide-react';
+import { API_URL } from '@/utils/api';
 
 export default function CatalogPage() {
   const { addToCart } = useCart();
@@ -24,7 +25,6 @@ export default function CatalogPage() {
 
   const fetchProducts = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
       const res = await fetch(`${API_URL}/products`);
       const data = await res.json();
       setProducts(data);

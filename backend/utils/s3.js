@@ -2,9 +2,14 @@ const { S3Client } = require('@aws-sdk/client-s3');
 const { Upload } = require('@aws-sdk/lib-storage');
 require('dotenv').config();
 
+const endpoint = process.env.MINIO_ENDPOINT || 'minio:9000';
+const formattedEndpoint = endpoint.startsWith('http://') || endpoint.startsWith('https://') 
+  ? endpoint 
+  : `http://${endpoint}`;
+
 const s3Client = new S3Client({
   region: 'us-east-1',
-  endpoint: `http://${process.env.MINIO_ENDPOINT || 'minio:9000'}`,
+  endpoint: formattedEndpoint,
   forcePathStyle: true,
   credentials: {
     accessKeyId: process.env.MINIO_ACCESS_KEY || 'erp_admin',

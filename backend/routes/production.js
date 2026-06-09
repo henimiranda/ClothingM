@@ -1,11 +1,7 @@
 const express = require('express');
-const { Pool } = require('pg');
-require('dotenv').config();
+const pool = require('../utils/db');
 
 const router = express.Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
 
 // Get all production orders
 router.get('/', async (req, res) => {

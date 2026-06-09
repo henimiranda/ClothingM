@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Truck, ArrowUpRight, ArrowDownLeft, History, Package, Search, Loader2 } from 'lucide-react';
+import { API_URL } from '@/utils/api';
 
 export default function SCMPage() {
   const [logs, setLogs] = useState([]);
@@ -14,7 +15,6 @@ export default function SCMPage() {
 
   const fetchLogs = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
       const res = await fetch(`${API_URL}/scm/logs`);
       const data = await res.json();
       setLogs(data);

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart, User, Calendar, Tag, Loader2, ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/utils/api';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -16,14 +17,9 @@ export default function AdminOrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
-      const res = await fetch(`${API_URL}/stats/overview`); // Temporary use stats or create new endpoint
+      const res = await fetch(`${API_URL}/orders`);
       const data = await res.json();
-      // For now, let's use the recentLogs as a proxy or simulate orders
-      setOrders([
-        { id: 1001, customer: 'John Doe', amount: 450000, status: 'Paid', date: new Date().toISOString() },
-        { id: 1002, customer: 'Jane Smith', amount: 150000, status: 'Paid', date: new Date().toISOString() },
-      ]);
+      setOrders(data);
     } catch (err) {
       console.error(err);
     } finally {

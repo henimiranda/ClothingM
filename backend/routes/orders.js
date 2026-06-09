@@ -1,10 +1,22 @@
 const express = require('express');
-const { Pool } = require('pg');
-require('dotenv').config();
+const pool = require('../utils/db');
 
 const router = express.Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+
+// Get all orders (for admin)
+router.get('/', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT o.*, u.name as customer_name 
+      FROM orders o 
+      JOIN users u ON o.user_id = u.id 
+      ORDER BY o.created_at DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
 // Create new order

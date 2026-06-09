@@ -5,6 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { motion } from 'framer-motion';
 import { MapPin, CreditCard, ShieldCheck, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/utils/api';
 
 export default function CheckoutPage() {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -31,7 +32,6 @@ export default function CheckoutPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
       const res = await fetch(`${API_URL}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

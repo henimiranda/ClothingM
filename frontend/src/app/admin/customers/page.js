@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Calendar, Search, Loader2, ArrowLeft, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/utils/api';
 
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState([]);
@@ -16,13 +17,9 @@ export default function AdminCustomersPage() {
 
   const fetchCustomers = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
-      // Simulating fetching customers for now
-      setCustomers([
-        { id: 1, name: 'John Doe', email: 'john@example.com', role: 'customer', joined: new Date().toISOString() },
-        { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'customer', joined: new Date().toISOString() },
-        { id: 3, name: 'Admin User', email: 'admin@clothingm.com', role: 'admin', joined: new Date().toISOString() },
-      ]);
+      const res = await fetch(`${API_URL}/auth/users`);
+      const data = await res.json();
+      setCustomers(data);
     } catch (err) {
       console.error(err);
     } finally {

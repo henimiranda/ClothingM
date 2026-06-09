@@ -4,8 +4,11 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255), -- Nullable for OAuth
     role VARCHAR(50) DEFAULT 'customer', -- 'customer', 'admin', 'manufactory', 'scm'
+    oauth_provider VARCHAR(50),
+    oauth_id VARCHAR(255),
+    pin VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

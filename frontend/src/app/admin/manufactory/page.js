@@ -2,13 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Factory, Calendar, Clock, CheckCircle2, ChevronRight, Plus, Loader2 } from 'lucide-react';
+import { Factory, Calendar, Clock, CheckCircle2, ChevronRight, Plus, Loader2, RefreshCw } from 'lucide-react';
+import { API_URL } from '@/utils/api';
 
 export default function ManufactoryPage() {
   const [productions, setProductions] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const statusSteps = ['queued', 'material_prep', 'cutting', 'sewing', 'finishing', 'completed'];
+  const statusSteps = [
+    { id: 'queued', label: 'Antrean' },
+    { id: 'material_prep', label: 'Persiapan Bahan' },
+    { id: 'cutting', label: 'Pemotongan' },
+    { id: 'sewing', label: 'Penjahitan' },
+    { id: 'finishing', label: 'Finishing' },
+    { id: 'completed', label: 'Selesai' }
+  ];
 
   useEffect(() => {
     fetchProductions();
@@ -16,7 +24,6 @@ export default function ManufactoryPage() {
 
   const fetchProductions = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
       const res = await fetch(`${API_URL}/production`);
       const data = await res.json();
       setProductions(data);
@@ -28,12 +35,11 @@ export default function ManufactoryPage() {
   };
 
   const updateStatus = async (id, currentStatus) => {
-    const currentIndex = statusSteps.indexOf(currentStatus);
-    if (currentIndex === statusSteps.length - 1) return;
+    const currentIndex = statusSteps.findIndex(s => s.id === currentStatus);
+    if (currentIndex === -1 || currentIndex === statusSteps.length - 1) return;
 
-    const nextStatus = statusSteps[currentIndex + 1];
+    const nextStatus = statusSteps[currentIndex + 1].id;
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
       await fetch(`${API_URL}/production/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

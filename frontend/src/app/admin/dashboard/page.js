@@ -17,12 +17,14 @@ import {
   Factory
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/utils/api';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ totalProducts: 0, totalOrders: 0, totalUsers: 0, revenue: 0, recentLogs: [] });
   const [user, setUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -52,7 +54,6 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
       const res = await fetch(`${API_URL}/stats/overview`);
       const data = await res.json();
       setStats({
@@ -71,15 +72,32 @@ export default function AdminDashboard() {
     e.preventDefault();
     setLoading(true);
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5052/api';
+      let body;
+      let headers = {};
+      
+      if (imageFile) {
+        body = new FormData();
+        body.append('name', formData.name);
+        body.append('category', formData.category);
+        body.append('description', formData.description);
+        body.append('price', formData.price);
+        body.append('base_stock', formData.base_stock);
+        body.append('size', formData.size);
+        body.append('image', imageFile);
+      } else {
+        body = JSON.stringify(formData);
+        headers['Content-Type'] = 'application/json';
+      }
+
       const res = await fetch(`${API_URL}/products`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers,
+        body
       });
       if (res.ok) {
         setIsModalOpen(false);
         setFormData({ name: '', description: '', price: '', base_stock: '', category: 'T-Shirt', size: 'L', image_url: '' });
+        setImageFile(null);
         alert('Product added successfully!');
         fetchStats();
       }
@@ -276,16 +294,30 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-medium text-corporate-400">URL Gambar</label>
-                    <div className="relative">
-                      <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-corporate-500" size={18} />
-                      <input 
-                        type="text" 
-                        placeholder="https://..."
-                        className="w-full bg-corporate-800 border border-corporate-700 rounded-xl py-3 pl-12 pr-4"
-                        value={formData.image_url}
-                        onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                      />
+                    <label className="text-sm font-medium text-corporate-400">Gambar Produk</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* File Upload */}
+                      <div className="relative">
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          className="w-full bg-corporate-800 border border-corporate-700 rounded-xl py-3 px-4 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-accent-blue file:text-white hover:file:bg-blue-600 cursor-pointer"
+                          onChange={(e) => setImageFile(e.target.files[0])}
+                        />
+                        <p className="text-[10px] text-corporate-500 mt-1">Upload langsung ke MinIO storage</p>
+                      </div>
+                      
+                      {/* Image URL fallback */}
+                      <div className="relative">
+                        <input 
+                          type="text" 
+                          placeholder="Atau masukkan URL gambar..."
+                          className="w-full bg-corporate-800 border border-corporate-700 rounded-xl py-3 px-4 text-sm"
+                          value={formData.image_url}
+                          onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                        />
+                        <p className="text-[10px] text-corporate-500 mt-1">Gunakan URL gambar eksternal</p>
+                      </div>
                     </div>
                   </div>
                   <button 
