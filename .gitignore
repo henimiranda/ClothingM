@@ -1,27 +1,65 @@
+# ========================
 # Dependencies
+# ========================
 node_modules/
 .pnp
 .pnp.js
 
-# Next.js
+# ========================
+# Environment Variables (JANGAN DIUPLOAD - berisi password!)
+# ========================
+.env
+.env.local
+.env.development
+.env.production
+.env*.local
+backend/.env
+frontend/.env.local
+
+# ========================
+# Next.js Build Output
+# ========================
 .next/
 out/
-
-# Production
 build/
 
-# Testing
+# ========================
+# Testing & Coverage
+# ========================
 coverage/
 
-# Environment variables
-.env*.local
-
-# Docker
+# ========================
+# Docker Data
+# ========================
 .docker/
+database/data/
 
+# ========================
 # OS Files
+# ========================
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Database Data
-database/data/
+# ========================
+# Logs
+# ========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# ========================
+# Temporary & Scratch Files
+# ========================
+scratch/
+test-login.js
+
+# ========================
+# IDE & Editor
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo

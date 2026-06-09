@@ -1,0 +1,28 @@
+# Traefik Static Configuration
+# File: traefik/traefik.yml
+
+# API dan Dashboard
+api:
+  dashboard: true
+  insecure: true  # Hanya untuk development. Di production, matikan ini!
+
+# Entry Points (pintu masuk traffic)
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+# Provider Docker - baca label dari container
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false   # Container hanya terekspos jika ada label traefik.enable=true
+    network: clothingm_default
+
+# Logging
+log:
+  level: INFO
+
+# Access log (log setiap request)
+accessLog: {}

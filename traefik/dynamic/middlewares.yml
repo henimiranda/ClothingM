@@ -1,0 +1,19 @@
+# Traefik Dynamic Configuration
+# File: traefik/dynamic/middlewares.yml
+# Konfigurasi ini di-load otomatis oleh Traefik
+
+http:
+  middlewares:
+    # Middleware: tambah security headers
+    secure-headers:
+      headers:
+        frameDeny: true
+        sslRedirect: false
+        browserXssFilter: true
+        contentTypeNosniff: true
+
+    # Middleware: rate limiting (batas 100 request per detik)
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
