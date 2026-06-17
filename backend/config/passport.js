@@ -4,9 +4,16 @@ const pool = require('../utils/db');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
+const clientID = process.env.GOOGLE_CLIENT_ID;
+const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+if (!clientID || !clientSecret) {
+  console.warn("WARNING: Google OAuth credentials (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET) are missing in environment variables!");
+}
+
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    clientID: clientID || "dummy-google-client-id",
+    clientSecret: clientSecret || "dummy-google-client-secret",
     callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:5000/auth/google/callback"
   },
   async (accessToken, refreshToken, profile, done) => {
