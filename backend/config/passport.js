@@ -1,6 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const pool = require('../utils/db');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 passport.use(new GoogleStrategy({
@@ -27,10 +28,15 @@ passport.use(new GoogleStrategy({
         const email = profile.emails[0].value;
         const role = email === ADMIN_EMAIL ? 'admin' : 'customer';
 
+        // Generate a random secure dummy password for OAuth user
+        const dummyPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(dummyPassword, salt);
+
         // Create new user
         const newUser = await pool.query(
-          'INSERT INTO users (name, email, role, oauth_provider, oauth_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-          [profile.displayName, email, role, 'google', profile.id]
+          'INSERT INTO users (name, email, password, role, oauth_provider, oauth_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+          [profile.displayName, email, hashedPassword, role, 'google', profile.id]
         );
         user = newUser.rows[0];
       }
@@ -46,7 +52,7 @@ passport.use(new GoogleStrategy({
       return done(error, null);
     }
   }
-));
+}));
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
