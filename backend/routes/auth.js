@@ -76,6 +76,40 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Debug route to check environment and database connection on Vercel
+router.get('/debug', async (req, res) => {
+  try {
+    const dbTest = await pool.query('SELECT NOW()');
+    res.json({
+      status: 'OK',
+      database: 'Connected successfully',
+      dbTime: dbTest.rows[0].now,
+      env: {
+        HAS_DATABASE_URL: !!process.env.DATABASE_URL,
+        HAS_GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
+        HAS_GOOGLE_CLIENT_SECRET: !!process.env.GOOGLE_CLIENT_SECRET,
+        GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
+        HAS_JWT_SECRET: !!process.env.JWT_SECRET,
+        PORT: process.env.PORT,
+        NODE_ENV: process.env.NODE_ENV
+      }
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'Error',
+      message: err.message,
+      stack: err.stack,
+      env: {
+        HAS_DATABASE_URL: !!process.env.DATABASE_URL,
+        HAS_GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
+        HAS_GOOGLE_CLIENT_SECRET: !!process.env.GOOGLE_CLIENT_SECRET,
+        GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
+        HAS_JWT_SECRET: !!process.env.JWT_SECRET
+      }
+    });
+  }
+});
+
 // ================= OAuth Routes =================
 
 // Initiate Google Login
