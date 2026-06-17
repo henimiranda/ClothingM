@@ -79,31 +79,53 @@ router.post('/login', async (req, res) => {
 // ================= OAuth Routes =================
 
 // Initiate Google Login
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
+router.get('/google', (req, res, next) => {
+  try {
+    passport.authenticate('google', { scope: ['profile', 'email'], session: false })(req, res, next);
+  } catch (err) {
+    console.error('Google Auth Init Error:', err);
+    res.status(500).json({ error: 'Google Auth Initiation Failed', details: err.message || err });
+  }
+});
 
 // Google Callback
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }), (req, res) => {
-  // Successful authentication, generate final token
-  const payload = {
-    user: {
-      id: req.user.id,
-      role: req.user.role
+router.get('/google/callback', (req, res, next) => {
+  passport.authenticate('google', { session: false }, (err, user, info) => {
+    if (err) {
+      console.error('Passport Auth Error:', err);
+      return res.status(500).json({ error: 'Passport Auth Failed', details: err.message || err });
     }
-  };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+    if (!user) {
+      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=auth_failed`);
+    }
 
-  // Prepare user object for frontend
-  const userObj = {
-    id: req.user.id,
-    name: req.user.name,
-    role: req.user.role,
-    email: req.user.email
-  };
-  const userParam = encodeURIComponent(JSON.stringify(userObj));
-  
-  // Redirect ke frontend dengan token akhir & info user
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-  res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${userParam}`);
+    try {
+      // Successful authentication, generate final token
+      const payload = {
+        user: {
+          id: user.id,
+          role: user.role
+        }
+      };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+      // Prepare user object for frontend
+      const userObj = {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        email: user.email
+      };
+      const userParam = encodeURIComponent(JSON.stringify(userObj));
+      
+      // Redirect ke frontend dengan token akhir & info user
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${userParam}`);
+    } catch (tokenErr) {
+      console.error('Token Generation Error:', tokenErr);
+      res.status(500).json({ error: 'Token Generation Failed', details: tokenErr.message || tokenErr });
+    }
+  })(req, res, next);
 });
 
 // Setup PIN (Only if they don't have one)

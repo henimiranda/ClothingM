@@ -33,10 +33,11 @@ passport.use(new GoogleStrategy({
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(dummyPassword, salt);
 
-        // Create new user
+        // Create new user with fallback for name
+        const userName = profile.displayName || (profile.name && `${profile.name.givenName || ''} ${profile.name.familyName || ''}`.trim()) || email.split('@')[0];
         const newUser = await pool.query(
           'INSERT INTO users (name, email, password, role, oauth_provider, oauth_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-          [profile.displayName, email, hashedPassword, role, 'google', profile.id]
+          [userName, email, hashedPassword, role, 'google', profile.id]
         );
         user = newUser.rows[0];
       }
