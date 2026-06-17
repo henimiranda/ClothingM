@@ -83,11 +83,27 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 // Google Callback
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }), (req, res) => {
-  // Successful authentication, generate a temporary token for PIN setup/verification
-  const tempToken = jwt.sign({ id: req.user.id, role: req.user.role, email: req.user.email, isTemp: true }, process.env.JWT_SECRET, { expiresIn: '15m' });
+  // Successful authentication, generate final token
+  const payload = {
+    user: {
+      id: req.user.id,
+      role: req.user.role
+    }
+  };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+  // Prepare user object for frontend
+  const userObj = {
+    id: req.user.id,
+    name: req.user.name,
+    role: req.user.role,
+    email: req.user.email
+  };
+  const userParam = encodeURIComponent(JSON.stringify(userObj));
   
-  // Redirect to frontend with temp token
-  res.redirect(`http://localhost:3000/auth/callback?token=${tempToken}`);
+  // Redirect ke frontend dengan token akhir & info user
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${userParam}`);
 });
 
 // Setup PIN (Only if they don't have one)

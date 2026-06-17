@@ -1,123 +1,108 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { login } from '@/utils/api';
 import { useRouter } from 'next/navigation';
-import { Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ShoppingBag, Loader2 } from 'lucide-react';
+import { API_URL } from '@/utils/api';
 
 export default function HomePage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const data = await login(email, password);
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Redirect based on role
-        if (data.user.role === 'admin') {
+  // Redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.role === 'admin') {
           router.push('/admin/dashboard');
         } else {
           router.push('/catalog');
         }
-        router.refresh();
-      } else {
-        setError(data.message || 'Login failed');
+      } catch (err) {
+        console.error('Error parsing user data:', err);
       }
-    } catch (err) {
-      setError('Connection error. Please try again.');
-    } finally {
-      setLoading(false);
     }
+  }, [router]);
+
+  const handleGoogleLogin = () => {
+    setLoading(true);
+    window.location.href = `${API_URL}/auth/google`;
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       {/* Background Decoration */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent-blue/10 rounded-full blur-[120px]"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-corporate-700/20 rounded-full blur-[120px]"></div>
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent-blue/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-corporate-700/20 rounded-full blur-[120px]" />
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-card w-full max-w-md p-10 rounded-[2.5rem] border border-corporate-700/50 shadow-2xl relative z-10"
+      {/* Centered Login Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="glass-card w-full max-w-md p-8 sm:p-10 rounded-[2.5rem] border border-corporate-700/50 shadow-2xl text-center relative z-10"
       >
-        <div className="text-center mb-10">
-          <div className="text-3xl font-black corporate-gradient-text mb-4">
+        {/* Branding & Logo */}
+        <div className="mb-8">
+          <div className="w-16 h-16 rounded-2xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center mx-auto mb-4">
+            <ShoppingBag size={28} className="text-accent-blue" />
+          </div>
+          
+          <div className="text-3xl font-black mb-1">
             <span className="text-accent-blue">CLOTHING</span>
             <span className="text-corporate-400">M</span>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Login Sistem</h1>
-          <p className="text-corporate-400 text-sm">Silakan masukkan kredensial Anda untuk melanjutkan</p>
+          
+          <h2 className="text-2xl font-bold text-white mb-2">Selamat Datang</h2>
+          <p className="text-corporate-400 text-sm">
+            Masuk ke akun ClothingM Anda dengan Google
+          </p>
         </div>
 
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="mb-6 p-4 bg-red-500/10 border border-red-500/50 text-red-500 rounded-2xl text-xs text-center"
-          >
-            {error}
-          </motion.div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-corporate-500 uppercase tracking-widest ml-1">Alamat Email</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-corporate-500" size={18} />
-              <input 
-                type="email" 
-                required
-                className="w-full bg-corporate-900/50 border border-corporate-700 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-accent-blue outline-none transition-all placeholder:text-corporate-700"
-                placeholder="nama@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+        {/* Google Login Button */}
+        <button
+          id="google-login-btn"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full py-4 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-900 rounded-2xl font-bold text-base transition-all flex items-center justify-center gap-3 shadow-xl shadow-black/20 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin" size={20} />
+              <span>Menghubungkan...</span>
+            </>
+          ) : (
+            <>
+              <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google"
+                className="w-5 h-5"
               />
-            </div>
-          </div>
+              <span>Masuk dengan Google</span>
+            </>
+          )}
+        </button>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-corporate-500 uppercase tracking-widest ml-1">Kata Sandi</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-corporate-500" size={18} />
-              <input 
-                type="password" 
-                required
-                className="w-full bg-corporate-900/50 border border-corporate-700 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-accent-blue outline-none transition-all placeholder:text-corporate-700"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
+        <p className="mt-6 text-xs text-corporate-500 leading-relaxed">
+          Dengan masuk, Anda menyetujui syarat & ketentuan penggunaan platform ClothingM.
+          Login hanya tersedia melalui akun Google.
+        </p>
 
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="w-full py-4 bg-accent-blue hover:bg-blue-600 text-white rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-3 shadow-xl shadow-accent-blue/30"
-          >
-            {loading ? <Loader2 className="animate-spin" /> : <>Masuk Sekarang <ArrowRight size={20} /></>}
-          </button>
-        </form>
-
-        <div className="mt-10 pt-8 border-t border-corporate-800 text-center">
-          <p className="text-corporate-400 text-sm mb-4">Belum punya akun?</p>
-          <a 
-            href="/register" 
-            className="inline-block w-full py-3 bg-corporate-800 hover:bg-corporate-700 text-white rounded-2xl font-bold transition-all"
-          >
-            Buat Akun Baru
-          </a>
+        {/* Divider & Footer */}
+        <div className="mt-8 pt-6 border-t border-corporate-800">
+          <p className="text-xs text-corporate-500">
+            Butuh bantuan?{' '}
+            <a
+              href="mailto:henimiranda9@gmail.com"
+              className="text-accent-blue hover:underline"
+            >
+              Hubungi admin
+            </a>
+          </p>
         </div>
       </motion.div>
     </div>
