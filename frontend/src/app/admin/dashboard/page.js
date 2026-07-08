@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { API_URL } from '@/utils/api';
+import { isAdminRole, isManagementRole } from '@/utils/roles';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ totalProducts: 0, totalOrders: 0, totalUsers: 0, revenue: 0, recentLogs: [] });
@@ -43,7 +44,7 @@ export default function AdminDashboard() {
       return;
     }
     const parsedUser = JSON.parse(storedUser);
-    if (parsedUser.role !== 'admin') {
+    if (!isManagementRole(parsedUser.role)) {
       alert('Access Denied: Admin Only');
       router.push('/');
       return;
@@ -129,9 +130,11 @@ export default function AdminDashboard() {
           <a href="/admin/orders" className="w-full flex items-center gap-3 px-4 py-3 hover:bg-corporate-800 text-corporate-400 rounded-xl transition-all">
             <ShoppingCart size={20} /> Pesanan
           </a>
-          <a href="/admin/customers" className="w-full flex items-center gap-3 px-4 py-3 hover:bg-corporate-800 text-corporate-400 rounded-xl transition-all">
-            <Users size={20} /> Pelanggan
-          </a>
+          {isAdminRole(user?.role) && (
+            <a href="/admin/customers" className="w-full flex items-center gap-3 px-4 py-3 hover:bg-corporate-800 text-corporate-400 rounded-xl transition-all">
+              <Users size={20} /> Pengguna
+            </a>
+          )}
         </nav>
       </aside>
 

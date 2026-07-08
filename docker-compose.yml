@@ -14,6 +14,7 @@ services:
       - "./traefik/dynamic:/etc/traefik/dynamic:ro"
     depends_on:
       - backend
+      - backend-laravel
       - frontend
 
   minio:
@@ -54,10 +55,25 @@ services:
       - minio
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/node-api`)"
       - "traefik.http.routers.backend.entrypoints=web"
-      - "traefik.http.routers.backend.priority=10"
+      - "traefik.http.routers.backend.priority=5"
       - "traefik.http.services.backend.loadbalancer.server.port=5000"
+
+  backend-laravel:
+    build: ./backend-laravel
+    container_name: clothingm_backend_laravel
+    ports:
+      - "5001:8000"
+    env_file: ./backend-laravel/.env
+    depends_on:
+      - minio
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend-laravel.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-laravel.entrypoints=web"
+      - "traefik.http.routers.backend-laravel.priority=20"
+      - "traefik.http.services.backend-laravel.loadbalancer.server.port=8000"
 
   frontend:
     build: ./frontend
@@ -67,6 +83,7 @@ services:
     env_file: ./frontend/.env.local
     depends_on:
       - backend
+      - backend-laravel
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
@@ -76,4 +93,3 @@ services:
 
 volumes:
   minio_data:
-

@@ -1,9 +1,10 @@
 'use client';
 
 import { useCart } from '@/context/CartContext';
-import { ShoppingCart, User as UserIcon, LogOut } from 'lucide-react';
+import { ShoppingCart, LogOut } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { getRoleLabel, isManagementRole } from '@/utils/roles';
 
 export default function Header() {
   const { cartCount } = useCart();
@@ -39,7 +40,7 @@ export default function Header() {
         <>
           <nav className="hidden md:flex gap-8">
             <a href="/catalog" className="hover:text-accent-blue transition-colors">Katalog</a>
-            {user?.role === 'admin' && (
+            {isManagementRole(user?.role) && (
               <>
                 <a href="/admin/dashboard" className="hover:text-accent-blue transition-colors text-accent-blue font-bold">Dashboard Admin</a>
                 <a href="/admin/scm" className="hover:text-accent-blue transition-colors">SCM</a>
@@ -63,7 +64,7 @@ export default function Header() {
               <div className="flex items-center gap-4">
                 <div className="flex flex-col items-end hidden sm:flex">
                   <span className="text-xs font-bold text-white">{user.name}</span>
-                  <span className="text-[10px] text-corporate-500 uppercase tracking-widest">{user.role === 'admin' ? 'Administrator' : 'Pelanggan'}</span>
+                  <span className="text-[10px] text-corporate-500 uppercase tracking-widest">{getRoleLabel(user.role)}</span>
                 </div>
                 <button 
                   onClick={handleLogout}

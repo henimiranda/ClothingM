@@ -24,7 +24,8 @@ ClothingM adalah platform E-Commerce profesional yang terintegrasi dengan sistem
 
 ## 🛠️ Teknologi (Tech Stack)
 - **Frontend**: Next.js 14, Tailwind CSS, Framer Motion, Context API.
-- **Backend**: Node.js, Express.js, JWT Auth, Bcrypt.
+- **Backend Utama**: Laravel 10, Sanctum, Socialite.
+- **Backend Legacy**: Node.js/Express tetap tersedia sebagai fallback di port `5000`.
 - **Database**: PostgreSQL.
 - **Infrastruktur**: Docker & Docker Compose.
 
@@ -43,8 +44,12 @@ ClothingM adalah platform E-Commerce profesional yang terintegrasi dengan sistem
    ```
 
 3. **Akses Aplikasi**:
-   - Frontend: `http://localhost:3034`
-   - Backend API: `http://localhost:5052/api`
+   - Frontend: `http://localhost:3000`
+   - Gateway: `http://localhost:8080`
+   - Laravel API utama: `http://localhost:5001/api`
+   - Node API lama: `http://localhost:5000/api`
+
+> Catatan: routing gateway `/api` sekarang diarahkan ke Laravel. Service Node lama tidak dihapus, jadi koneksi lama masih bisa dicek langsung melalui port `5000`.
 
 ## 🔑 Akun Login Default (Admin)
 - **Email**: `admin@clothingm.com`

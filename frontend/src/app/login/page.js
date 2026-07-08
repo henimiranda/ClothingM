@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Loader2 } from 'lucide-react';
-import { API_URL } from '@/utils/api';
+import { OAUTH_API_URL } from '@/utils/oauth';
+import { isManagementRole } from '@/utils/roles';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,7 @@ export default function LoginPage() {
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr);
-        if (user.role === 'admin') {
+        if (isManagementRole(user.role)) {
           router.push('/admin/dashboard');
         } else {
           router.push('/catalog');
@@ -30,7 +31,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     setLoading(true);
-    window.location.href = `${API_URL}/auth/google`;
+    window.location.href = `${OAUTH_API_URL}/auth/google`;
   };
 
   return (
